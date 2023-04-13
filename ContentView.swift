@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct IntroView: View {
     var body: some View {
         HStack{
             Spacer()
@@ -38,8 +38,8 @@ struct BlueButton: ButtonStyle {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct IntroView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().previewInterfaceOrientation(.landscapeLeft)
+        IntroView().previewInterfaceOrientation(.landscapeLeft)
     }
 }
