@@ -21,8 +21,10 @@ struct DiffieHellmanView: View {
     
     // the agreed integer
     @State var integerIndexDbl = 125.0
-    var userInt: Int {
-        Int(round(integerIndexDbl))
+    var userInt: Binding<Int> { Binding(
+            get: { Int(round(integerIndexDbl)) },
+            set: { _ in }
+        )
     }
     
     // array of useable prime numbers
@@ -31,19 +33,24 @@ struct DiffieHellmanView: View {
     // the computed integer
     let generatedInt: Int = Int.random(in: 1...250)
     
-    var userShared: Int {
-        g ^ userInt % p
-    }
-    var computerShared: Int {
-        g ^ generatedInt % p
-    }
-    var sharedSecret: Int {
-        userShared ^ generatedInt
-    }
+    var userShared: Binding<Int> { Binding(
+        get: { g ^ userInt.wrappedValue % p },
+        set: { _ in }
+    )}
+    
+    var computerShared: Binding<Int> { Binding(
+        get: { g ^ generatedInt % p },
+        set: { _ in }
+    )}
+    
+    var sharedSecret: Binding<Int> { Binding(
+        get: { userShared.wrappedValue ^ generatedInt },
+        set: { _ in }
+    )}
     
     @State var calculatedKey: String = "0"
     var correctness: String {
-        Int(calculatedKey) == sharedSecret ? "Correct!" : "Wrong number!"
+        Int(calculatedKey) == sharedSecret.wrappedValue ? "Correct!" : "Wrong number!"
     }
     
     var body: some View {
@@ -68,7 +75,7 @@ struct DiffieHellmanView: View {
                         // display page two text
                         DiffieHellmanTextTwo()
                         Slider(value: $integerIndexDbl, in: 1...250)
-                        Text("Your integer number: ") + Text("\(userInt)").font(.custom("menlo", size: 30))
+                        Text("Your integer number: ") + Text("\(userInt.wrappedValue)").font(.custom("menlo", size: 30))
                             .foregroundColor(.blue)
                         Button("Next") {
                             // hide this page and display next page
@@ -79,11 +86,11 @@ struct DiffieHellmanView: View {
                     }
                     if pageThree {
                         // display page three text
-                        DiffieHellmanTextThree(computerShared: computerShared)
+                        DiffieHellmanTextThree(computerShared: computerShared.wrappedValue)
                     }
                     if pageFour {
                         // display page four text
-                        DiffieHellmanTextFour(userInt: userInt, computerShared: computerShared, sharedSecret: sharedSecret)
+                        DiffieHellmanTextFour(userInt: userInt.wrappedValue, computerShared: computerShared.wrappedValue, sharedSecret: sharedSecret.wrappedValue)
                         TextField("Type calculated number here...", text: $calculatedKey)
                             .keyboardType(.numberPad)
                             .onReceive(Just(calculatedKey)) { newValue in
@@ -101,7 +108,6 @@ struct DiffieHellmanView: View {
                     }
                     Spacer()
                 }
-                .font(.system(size: 30))
                 .frame(maxWidth: geo.size.width*0.333)
                 .padding()
                 
@@ -109,10 +115,11 @@ struct DiffieHellmanView: View {
                 
                 VStack{
                     Spacer()
-                    Text("Spritekit Here")
+                    DiffieHellmanGraphView(pageOne: $pageOne, pageTwo: $pageTwo, pageThree: $pageThree, userInt: userInt, userPublicKey: userShared, computerPublicKey: computerShared, sharedSecretKey: sharedSecret)
                     Spacer()
                 }.padding()
             }
+            .minimumScaleFactor(0.75)
             .navigationTitle("Diffie Hellman")
             .padding()
         }
