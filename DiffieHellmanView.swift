@@ -44,13 +44,13 @@ struct DiffieHellmanView: View {
     )}
     
     var sharedSecret: Binding<Int> { Binding(
-        get: { userShared.wrappedValue ^ generatedInt },
+        get: { userShared.wrappedValue ^ generatedInt % p },
         set: { _ in }
     )}
     
-    @State var calculatedKey: String = "0"
-    var correctness: String {
-        Int(calculatedKey) == sharedSecret.wrappedValue ? "Correct!" : "Wrong number!"
+    @State var calculatedKey: String = ""
+    var correctness: Bool {
+        Int(calculatedKey) == sharedSecret.wrappedValue ? true : false
     }
     
     var body: some View {
@@ -62,6 +62,7 @@ struct DiffieHellmanView: View {
                         DiffieHellmanTextOne()
                         TextField("Type message here...", text: $message)
                             .padding()
+                            .autocorrectionDisabled() 
                             .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
                         Button("Next") {
                             // hide this page and display next page
@@ -75,8 +76,7 @@ struct DiffieHellmanView: View {
                         // display page two text
                         DiffieHellmanTextTwo()
                         Slider(value: $integerIndexDbl, in: 1...250)
-                        Text("Your integer number: ") + Text("\(userInt.wrappedValue)").font(.custom("menlo", size: 30))
-                            .foregroundColor(.blue)
+                        Text("Your integer number: ") + Style.monospace("\(userInt.wrappedValue)")
                         Button("Next") {
                             // hide this page and display next page
                             pageTwo = false
@@ -93,6 +93,7 @@ struct DiffieHellmanView: View {
                         DiffieHellmanTextFour(userInt: userInt.wrappedValue, computerShared: computerShared.wrappedValue, sharedSecret: sharedSecret.wrappedValue)
                         TextField("Type calculated number here...", text: $calculatedKey)
                             .keyboardType(.numberPad)
+                            .autocorrectionDisabled()
                             .onReceive(Just(calculatedKey)) { newValue in
                                 let filtered = newValue.filter { "0123456789".contains($0) }
                                 if filtered != newValue {
@@ -101,8 +102,8 @@ struct DiffieHellmanView: View {
                             }
                             .padding()
                             .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
-                        Text("\(correctness)")
-                        if correctness == "Correct!" {
+                        correctness ? Text("Correct!").foregroundColor(.blue) : Text("Wrong Number!").foregroundColor(.red)
+                        if correctness {
                             CorrectText()
                         }
                     }
@@ -115,12 +116,11 @@ struct DiffieHellmanView: View {
                 
                 VStack{
                     Spacer()
-                    DiffieHellmanGraphView(pageOne: $pageOne, pageTwo: $pageTwo, pageThree: $pageThree, userInt: userInt, userPublicKey: userShared, computerPublicKey: computerShared, sharedSecretKey: sharedSecret)
+                    DiffieHellmanGraphView(pageOne: $pageOne, pageTwo: $pageTwo, pageThree: $pageThree, pageFour: $pageFour, userInt: userInt, userPublicKey: userShared, computerPublicKey: computerShared, sharedSecretKey: sharedSecret)
                     Spacer()
                 }.padding()
             }
             .minimumScaleFactor(0.75)
-            .navigationTitle("Diffie Hellman")
             .padding()
         }
     }
@@ -139,11 +139,11 @@ struct DiffieHellmanTextOne: View {
 struct DiffieHellmanTextTwo: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("First, we will publicly agree on two shared numbers. The first integer must be a prime number, which we call the 'modulus', or 'p'. Let's choose p = 23.")
-            Text("Next, we have to choose an integer that has to be a primitive root modulo p, called the 'base' or 'g'. Let's choose g = 5.")
+            Text("First, we will publicly agree on two shared numbers. The first integer must be a prime number, which we call the 'modulus', or 'p'. Let's choose ") + Style.monospace("p = 23") + Text(".")
+            Text("Next, we have to choose an integer that has to be a primitive root modulo p, called the 'base' or 'g'. Let's choose ") + Style.monospace("g = 5") + Text(".")
             Text("Now, I want you to choose an integer, and I will choose an integer as well.")
-            Text("Let's call your secret prime number a, and my secret prime number b.")
             Text("However, we have to keep these integers secret and not share it with each other.")
+            Text("Let's call your secret prime number ") + Style.monospace("a") + Text(", and my secret prime number ") + Style.monospace("b") + Text(".")
         }
     }
 }
@@ -153,9 +153,9 @@ struct DiffieHellmanTextThree: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Great! Now, we will share the value of ") + Text("g").font(.custom("menlo", size: 30)).foregroundColor(.blue) + Text("secret").font(.custom("menlo", size: 18)).baselineOffset(7.0).foregroundColor(.blue) + Text(" mod p").font(.custom("menlo", size: 30)).foregroundColor(.blue)
-            Text("I have sent you my value, which I calculated to be ") + Text("\(computerShared)").font(.custom("menlo", size: 30)).foregroundColor(.blue) + Text(".")
-            Text("Please drag the value of your (thing) to the box to share your value to me.")
+            Text("Great! Now, we will share the value of ") + Style.monospace("g") + Style.superscript("secret") + Style.monospace(" mod p") + Text(".")
+            Text("I have sent you my value, which I calculated to be ") + Style.monospace("\(computerShared)") + Text(".")
+            Text("Please send me the value of your public key. Do so by dragging and dropping your public key shown on the right into the black box. To pick up the box, you have to press and hold onto it!")
         }
     }
 }

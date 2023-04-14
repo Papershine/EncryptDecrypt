@@ -14,6 +14,7 @@ struct DiffieHellmanGraphView: View {
     @Binding var pageOne: Bool
     @Binding var pageTwo: Bool
     @Binding var pageThree: Bool
+    @Binding var pageFour: Bool
     
     @Binding var userInt: Int
     @Binding var userPublicKey: Int
@@ -27,24 +28,26 @@ struct DiffieHellmanGraphView: View {
             boxify(Text("Prime modulus\n") + Style.monospaceBig("p = \(p)"), color: .blue)
             HStack{
                 VStack(spacing: 20) {
-                    boxify(Text("Your Secret\n") + Style.monospaceBig("\(userInt)"), color: .red)
+                    boxify(Text("Your Secret\n") + Style.monospaceBig("a = \(userInt)"), color: .red)
                     if #available(iOS 16.0, *) {
                         VStack {
-                            boxify(Text("Your Public Key\n") + Style.monospaceBig("\(userPublicKey)"), color: .blue).draggable(1)
+                            boxify(Text("Your Public Key\n") + Style.monospaceBig("A = \(userPublicKey)"), color: .blue).draggable(1)
                         }.draggable(1)
                     } else {
                         // Fallback on earlier versions
                     }
-                    boxify(Text("Computer Public Key\n") + Style.monospaceBig("\(computerPublicKey)"), color: .blue)
+                    boxify(Text("Computer Public Key\n") + Style.monospaceBig("B = \(computerPublicKey)"), color: .blue)
                 }
                 Spacer().frame(maxWidth: 25)
-                VStack(spacing: 25) {
-                    boxify(Text("Computer Secret\n") + Style.monospaceBig("?"), color: .red)
-                    boxify(Text("Computer Public Key\n") + Style.monospaceBig("\(computerPublicKey)"), color: .blue)
+                VStack(spacing: 20) {
+                    boxify(Text("Computer Secret\n") + Style.monospaceBig("b = ?"), color: .red)
+                    boxify(Text("Computer Public Key\n") + Style.monospaceBig("B = \(computerPublicKey)"), color: .blue)
                     if #available(iOS 16.0, *) {
-                        boxify(Text("Your Public Key\n") + Style.monospaceBig("\(userPublicKey)"), color: .blue)
+                        boxify(Text("Your Public Key\n") + Style.monospaceBig("A = \(userPublicKey)"), color: .blue)
                             .dropDestination(for: Int.self) { (items, point) in
                                 print("dropped!")
+                                pageThree = false
+                                pageFour = true
                                 return true
                             }
                     } else {
@@ -52,7 +55,7 @@ struct DiffieHellmanGraphView: View {
                     }
                 }
             }
-            boxify(Text("Shared Secret Key \n") + Style.monospaceBig("\(sharedSecretKey)"), color: .red)
+            boxify(Text("Shared Secret Key \n") + Style.monospaceBig("\(sharedSecretKey)"), color: .purple)
         }
         .padding()
         .multilineTextAlignment(.center)
