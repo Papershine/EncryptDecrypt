@@ -49,9 +49,10 @@ struct DiffieHellmanView: View {
     )}
     
     @State var calculatedKey: String = ""
-    var correctness: Bool {
-        Int(calculatedKey) == sharedSecret.wrappedValue ? true : false
-    }
+    var correctness: Binding<Bool> { Binding(
+        get: { Int(calculatedKey) == sharedSecret.wrappedValue ? true : false },
+        set: { _ in }
+    )}
     
     var body: some View {
         GeometryReader { geo in
@@ -102,8 +103,8 @@ struct DiffieHellmanView: View {
                             }
                             .padding()
                             .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
-                        correctness ? Text("Correct!").foregroundColor(.blue) : Text("Wrong Number!").foregroundColor(.red)
-                        if correctness {
+                        correctness.wrappedValue ? Text("Correct!").foregroundColor(.blue) : Text("Wrong Number!").foregroundColor(.red)
+                        if correctness.wrappedValue {
                             CorrectText()
                         }
                     }
@@ -116,7 +117,7 @@ struct DiffieHellmanView: View {
                 
                 VStack{
                     Spacer()
-                    DiffieHellmanGraphView(pageOne: $pageOne, pageTwo: $pageTwo, pageThree: $pageThree, pageFour: $pageFour, userInt: userInt, userPublicKey: userShared, computerPublicKey: computerShared, sharedSecretKey: sharedSecret)
+                    DiffieHellmanGraphView(pageOne: $pageOne, pageTwo: $pageTwo, pageThree: $pageThree, pageFour: $pageFour, correctness: correctness, userInt: userInt, userPublicKey: userShared, computerPublicKey: computerShared, sharedSecretKey: sharedSecret)
                     Spacer()
                 }.padding()
             }
