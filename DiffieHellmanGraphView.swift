@@ -1,10 +1,3 @@
-//
-//  DiffieHellmanGraphView.swift
-//  EncryptDecrypt
-//
-//  Created by Hilary Lau on 2023-04-13.
-//
-
 import SwiftUI
 
 struct DiffieHellmanGraphView: View {
@@ -26,13 +19,13 @@ struct DiffieHellmanGraphView: View {
     var body: some View {
         VStack {
             boxify(Text("Prime base\n") + Style.monospaceBig("g = \(g)"), color: .blue).showOnBindings($pageTwo, $pageThree, $pageFour)
-            Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour)
+            Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour).invertOnDarkTheme()
             boxify(Text("Prime modulus\n") + Style.monospaceBig("p = \(p)"), color: .blue).showOnBindings($pageTwo, $pageThree, $pageFour)
             HStack{
                 VStack {
-                    Image("arrow_left").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour)
+                    Image("arrow_left").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour).invertOnDarkTheme()
                     boxify(Text("Your Secret\n") + Style.monospaceBig("a = \(userInt)"), color: .red).showOnBindings($pageTwo, $pageThree, $pageFour)
-                    Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageThree, $pageFour)
+                    Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageThree, $pageFour).invertOnDarkTheme()
                     if !pageFour {
                         if #available(iOS 16.0, *) {
                             boxify(Text("Your Public Key\n") + Style.monospaceBig("A = \(userPublicKey)"), color: .blue).draggable(1).showOnBindings($pageThree)
@@ -46,17 +39,17 @@ struct DiffieHellmanGraphView: View {
                 }
                 Spacer().frame(maxWidth: 25)
                 VStack {
-                    Image("arrow_right").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour)
+                    Image("arrow_right").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour).invertOnDarkTheme()
                     boxify(Text("Computer Secret\n") + Style.monospaceBig("b = ?"), color: .red).showOnBindings($pageTwo, $pageThree, $pageFour)
-                    Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageThree, $pageFour)
+                    Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageThree, $pageFour).invertOnDarkTheme()
                     boxify(Text("Computer Public Key\n") + Style.monospaceBig("B = \(computerPublicKey)"), color: .blue).showOnBindings($pageThree, $pageFour)
                 }
             }
-            Image("arrow_cross").resizable().aspectRatio(contentMode: .fit).frame( height: 25).showOnBindings($pageThree, $pageFour)
+            Image("arrow_cross").resizable().aspectRatio(contentMode: .fit).frame( height: 25).showOnBindings($pageThree, $pageFour).invertOnDarkTheme()
             HStack {
                 VStack {
                     boxify(Text("Computer Public Key\n") + Style.monospaceBig("B = \(computerPublicKey)"), color: .blue).showOnBindings( $pageThree, $pageFour)
-                    Image("arrow_right").resizable().frame(width: 18, height: 18).showOnBindings($correctness)
+                    Image("arrow_right").resizable().frame(width: 18, height: 18).showOnBindings($correctness).invertOnDarkTheme()
                 }
                 Spacer().frame(maxWidth: 25)
                 VStack {
@@ -75,7 +68,7 @@ struct DiffieHellmanGraphView: View {
                     } else {
                         // Fallback on earlier versions
                     }
-                    Image("arrow_left").resizable().frame(width: 18, height: 18).showOnBindings($correctness)
+                    Image("arrow_left").resizable().frame(width: 18, height: 18).showOnBindings($correctness).invertOnDarkTheme()
                 }
             }
             //boxify(Text("Shared Secret Key \n") + Style.monospaceBig("\(sharedSecretKey)"), color: .purple).showOnBindings($correctness)
@@ -97,25 +90,6 @@ struct DiffieHellmanGraphView: View {
             return t.padding().frame(maxWidth: .infinity).foregroundColor(textColor).background(color).transition(.push(from: .bottom))
         } else {
             return t.padding().frame(maxWidth: .infinity).foregroundColor(textColor).background(color)
-        }
-    }
-}
-
-extension AnyTransition {
-    static var moveAndFade: AnyTransition {
-        .asymmetric(
-            insertion: .move(edge: .trailing).combined(with: .opacity),
-            removal: .scale.combined(with: .opacity)
-        )
-    }
-}
-
-extension View {
-    @ViewBuilder func showOnBindings(_ bools: Binding<Bool>...) -> some View {
-        if bools.contains(where: { $0.wrappedValue == true }) {
-            self
-        } else {
-            self.hidden()
         }
     }
 }

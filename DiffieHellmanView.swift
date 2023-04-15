@@ -58,20 +58,16 @@ struct DiffieHellmanView: View {
         GeometryReader { geo in
             HStack{
                 VStack(spacing: 20) {
+                    Text("Diffie Hellman Key Exchange").font(.system(.headline))
                     if pageOne {
                         // display page one text
                         DiffieHellmanTextOne()
-                        TextField("Type message here...", text: $message)
-                            .padding()
-                            .autocorrectionDisabled() 
-                            .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
                         Button("Next") {
                             // hide this page and display next page
                             pageOne = false
                             pageTwo = true
                         }
                         .buttonStyle(BlueButton())
-                        .disabled(message == "")
                     }
                     if pageTwo {
                         // display page two text
@@ -131,8 +127,7 @@ struct DiffieHellmanTextOne: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Diffie Hellman is an algorithm that creates a 'secret' key that is shared between two users.")
-            Text("Let's demonstrate this by assuming you want to send something to me encrypted.")
-            Text("First, enter a word that you want to send to me.")
+            Text("In this chapter, we will investigate how can a secret key shared between two people can be created over the internet without others knowing.")
         }
     }
 }

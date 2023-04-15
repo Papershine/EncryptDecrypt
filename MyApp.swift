@@ -4,8 +4,8 @@ import SwiftUI
 struct MyApp: App {
     var body: some Scene {
         WindowGroup {
-            //IntroView() // init display
-            DiffieHellmanView()
+            // Start the navigation control
+            NavigationView().preferredColorScheme(.light)
         }
     }
 }

@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct IntroView: View {
+    
+    @Binding var pageIntro: Bool
+    @Binding var pageCipher: Bool
+    
     var body: some View {
         HStack{
             Spacer()
@@ -20,6 +24,8 @@ struct IntroView: View {
         .contentShape(Rectangle()) // so whole page can be tapped
         .onTapGesture {
             print("tap")
+            pageIntro = false
+            pageCipher = true
         }
     }
 }
@@ -35,11 +41,5 @@ struct BlueButton: ButtonStyle {
             .foregroundColor(.white)
             .background(isEnabled ? .blue : .gray)
             .clipShape(Capsule())
-    }
-}
-
-struct IntroView_Previews: PreviewProvider {
-    static var previews: some View {
-        IntroView().previewInterfaceOrientation(.landscapeLeft)
     }
 }
