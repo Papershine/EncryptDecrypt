@@ -75,6 +75,12 @@ extension AnyTransition {
         )
     }
     
+    static var enterFromRight: AnyTransition {
+        .asymmetric(
+            insertion: .move(edge: .trailing),
+            removal: .offset(x: 0, y: 0))
+    }
+    
     static var pushFromBottom: AnyTransition {
         .asymmetric(
             insertion: .move(edge: .bottom).combined(with: .opacity),
@@ -171,11 +177,7 @@ extension View {
 
 extension Animation {
     static func shakeSpring() -> Animation {
-        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(2).delay(2)
-    }
-    
-    static func shakeSpringFast() -> Animation {
-        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(2).delay(1)
+        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(3).delay(1.5)
     }
 }
 

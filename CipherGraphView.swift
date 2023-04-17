@@ -160,7 +160,7 @@ struct CipherGraphView: View {
                             decryptPulseStart = true
                             return NSItemProvider(object: "enc" as NSItemProviderWriting)
                         }
-                        .transition(.pushFromRight)
+                        .transition(.enterFromRight)
                         Spacer()
                     } else if viewModel.pageFiveSub || viewModel.pageSix {
                         ZStack {
