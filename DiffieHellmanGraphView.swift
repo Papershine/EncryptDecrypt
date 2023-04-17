@@ -4,7 +4,7 @@ struct DiffieHellmanGraphView: View {
     
     @ObservedObject var viewModel: DiffieHellmanViewModel
     
-    @State private var numBase = 0
+    @State private var baseShake = 0
     
     var body: some View {
         ZStack {
@@ -19,13 +19,12 @@ struct DiffieHellmanGraphView: View {
                     if #available(iOS 16.0, *) {
                         Style.boxify(Text("Base Color"), color: viewModel.baseColor)
                             .draggable("base")
-                            .shake(with: numBase)
+                            .shake(with: baseShake)
                             .onReceive(viewModel.$baseMixable) { bool in
                                 if bool {
                                     withAnimation(.shakeSpring()) {
-                                        numBase = 3
+                                        baseShake = 3
                                     }
-                                    
                                 }
                             }
                             .disabled(viewModel.baseMixable == false)

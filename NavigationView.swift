@@ -6,6 +6,10 @@ struct NavigationView: View {
     @State var pageCipher = false
     @State var pageDiffie = false
     @State var pageQuantum = false
+    @State var pageFinish = false
+    
+    @State var publicKeyColor: Color = .white
+    @State var secretKeyColor: Color = .white
     
     var body: some View {
         ZStack {
@@ -16,10 +20,13 @@ struct NavigationView: View {
                 CipherView(pageCipher: $pageCipher, pageDiffie: $pageDiffie).transition(.pushFromRight)
             }
             if pageDiffie {
-                DiffieHellmanView(pageDiffie: $pageDiffie, pageQuantum: $pageQuantum).transition(.pushFromRight)
+                DiffieHellmanView(pageDiffie: $pageDiffie, pageQuantum: $pageQuantum, publicKeyColor: $publicKeyColor, secretKeyColor: $secretKeyColor).transition(.pushFromRight)
             }
             if pageQuantum {
-                QuantumView().transition(.pushFromRight)
+                QuantumView(pageQuantum: $pageQuantum, pageFinish: $pageFinish, publicKeyColor: $publicKeyColor, secretKeyColor: $secretKeyColor).transition(.pushFromRight)
+            }
+            if pageFinish {
+                
             }
         }.animation(.default, value: pageIntro)
             .animation(.default, value: pageCipher)

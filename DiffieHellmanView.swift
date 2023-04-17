@@ -7,6 +7,8 @@ struct DiffieHellmanView: View {
     
     @Binding var pageDiffie: Bool
     @Binding var pageQuantum: Bool
+    @Binding var publicKeyColor: Color
+    @Binding var secretKeyColor: Color
     
     var body: some View {
         GeometryReader { geo in
@@ -83,7 +85,7 @@ struct DiffieHellmanView: View {
                     }
                     if viewModel.pageSix {
                         VStack {
-                            DiffieHellmanTextSix()
+                            DiffieHellmanTextSix().frame(maxWidth: .infinity)
                             
                             Button("Reveal Computer Secret Colors") {
                                 viewModel.secretRevealed = true
@@ -95,7 +97,10 @@ struct DiffieHellmanView: View {
                                 VStack {
                                     DiffieHellmanTextSixSub()
                                     Button("Next Chapter") {
-                                        // hide this page and display next page
+                                        // update data needed for next chapter
+                                        publicKeyColor = viewModel.userBlended.wrappedValue
+                                        secretKeyColor = viewModel.userColor
+                                        // go to next chapter
                                         pageDiffie = false
                                         pageQuantum = true
                                     }
@@ -182,6 +187,7 @@ struct DiffieHellmanTextFive: View {
 struct DiffieHellmanTextSix: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
+            Text("Great job! You have created your 'shared secret key' color.")
             Text("For demonstration purposes, press the button below to reveal my secret colors.")
             Text("In the real world you won't know my secret color.")
         }
@@ -233,6 +239,6 @@ struct DiffieHellmanTextSixSub: View {
 
 struct DiffieHellmanView_Previews: PreviewProvider {
     static var previews: some View {
-        DiffieHellmanView(pageDiffie: .constant(true), pageQuantum: .constant(false)).previewInterfaceOrientation(.landscapeLeft)
+        DiffieHellmanView(pageDiffie: .constant(true), pageQuantum: .constant(false), publicKeyColor: .constant(.green), secretKeyColor: .constant(.blue)).previewInterfaceOrientation(.landscapeLeft)
     }
 }
