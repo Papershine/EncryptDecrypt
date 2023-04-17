@@ -99,9 +99,16 @@ struct CipherView: View {
                         }.transition(.enterFromBottom)
                     }
                     Spacer()
-                }
-                .frame(maxWidth: geo.size.width*0.333)
-                .padding()
+                }.animation(.default, value: viewModel.pageOne)
+                    .animation(.default, value: viewModel.pageTwo)
+                    .animation(.default, value: viewModel.pageThree)
+                    .animation(.default, value: viewModel.pageFour)
+                    .animation(.default, value: viewModel.pageFourSub)
+                    .animation(.default, value: viewModel.pageFive)
+                    .animation(.default, value: viewModel.pageFiveSub)
+                    .animation(.default, value: viewModel.pageSix)
+                    .frame(maxWidth: geo.size.width*0.333)
+                    .padding()
                 Divider()
                 
                 VStack {
@@ -113,14 +120,7 @@ struct CipherView: View {
                         Spacer()
                     }
                 }.padding()
-            }.animation(.default, value: viewModel.pageOne)
-                .animation(.default, value: viewModel.pageTwo)
-                .animation(.default, value: viewModel.pageThree)
-                .animation(.default, value: viewModel.pageFour)
-                .animation(.default, value: viewModel.pageFourSub)
-                .animation(.default, value: viewModel.pageFive)
-                .animation(.default, value: viewModel.pageFiveSub)
-                .animation(.default, value: viewModel.pageSix)
+            }
         }
     }
 }
@@ -162,11 +162,6 @@ struct CipherTextTwo: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Then, we need to choose some number to be the key.")
-            /*
-            Text("This key is used to encrypt and decrypt the message. When we pass the key into the encryption algorithm, the algorithm scrambles the message based on the key. The same key can also unscramble the message using a decryption algorithm.")
-            Text("For this example, we will use the very simple alogrithm called the Ceasar Cipher.")
-            Text("This algorithm shifts every letter by the number provided in the key. For instance, if the key is ") + Style.monospace("3") + Text(" , then the letter 'A' will be shifted up by 3 indexes to the letter 'D'. Also, since there are only 26 letters, the algorithm wraps around at the end. That is, the letter 'Z' shifted up by 3 indexes will be the letter 'C'.")
-            */
             Text("Use the slider below to choose the value of the key. It can be any integer.")
         }
     }
@@ -221,11 +216,9 @@ struct CipherTextSix: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("So, if anybody knows the correct value of your key, they will be able to decrypt your messages or anything that you store.")
-            Text("When you are sending private messages to other people over the internet encrypted, both you and the other person need to have the same key.")
-            Text("But you cannot send the key over too, since people eavesdropping on the internet can see the key and decrypt the message using it.")
-            Text("Therefore, we need a method to generate the same key between two people, without people eavesdropping over the internet being able to guess the key.")
-            Text("There is an established method for doing so, which is called 'Diffie Hellman Key Exchange.'")
-            Text("Let's explore this.")
+            Text("Therefore, we need a method to generate the same key between two people, without others eavesdropping over the internet being able to guess the key in order to send and receive encrypted messages.")
+            Text("The most common method is called 'Diffie Hellman Key Exchange'.")
+            Text("Let's explore it.")
         }
     }
 }

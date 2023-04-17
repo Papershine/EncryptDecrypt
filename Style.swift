@@ -177,7 +177,7 @@ extension View {
 
 extension Animation {
     static func shakeSpring() -> Animation {
-        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(3).delay(1.5)
+        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(2).delay(1.5)
     }
 }
 

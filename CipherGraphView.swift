@@ -108,35 +108,37 @@ struct CipherGraphView: View {
                     if viewModel.pageThree {
                         ZStack {
                             Image("key")
-                                .shake(with: keyShake)
-                                .onAppear {
-                                    withAnimation(.shakeSpring()) {
-                                        keyShake = 3
-                                    }
-                                }
-                            Style.monospaceBig("\(viewModel.key.wrappedValue)").offset(x: -30)
-                        }.onDrag {
+                            Style.monospaceBig("\(viewModel.key.wrappedValue)").foregroundColor(.black).offset(x: -30)
+                        }
+                        .shake(with: keyShake)
+                        .onAppear {
+                            withAnimation(.shakeSpring()) {
+                                keyShake = 3
+                            }
+                        }
+                        .onDrag {
                             encryptPulseStart = true
                             return NSItemProvider(object: "enc" as NSItemProviderWriting)
                         }
                     } else if viewModel.pageFour && !viewModel.pageFourSub {
                         ZStack {
                             Image("key")
-                                .shake(with: keyShakeAgain)
-                                .onAppear {
-                                    withAnimation(.shakeSpring()) {
-                                        keyShakeAgain = 3
-                                    }
-                                }
-                            Style.monospaceBig("\(viewModel.key.wrappedValue)").offset(x: -30)
-                        }.onDrag {
+                            Style.monospaceBig("\(viewModel.key.wrappedValue)").foregroundColor(.black).offset(x: -30)
+                        }
+                        .shake(with: keyShakeAgain)
+                        .onAppear {
+                            withAnimation(.shakeSpring()) {
+                                keyShakeAgain = 3
+                            }
+                        }
+                        .onDrag {
                             decryptPulseStart = true
                             return NSItemProvider(object: "enc" as NSItemProviderWriting)
                         }
                     } else {
                         ZStack {
                             Image("key")
-                            Style.monospaceBig("\(viewModel.key.wrappedValue)").offset(x: -30)
+                            Style.monospaceBig("\(viewModel.key.wrappedValue)").foregroundColor(.black).offset(x: -30)
                         }
                     }
                 } else {
@@ -148,13 +150,13 @@ struct CipherGraphView: View {
                     if viewModel.pageFive && !viewModel.pageFiveSub {
                         ZStack {
                             Image("key_wrong")
-                                .shake(with: wrongKeyShake)
-                                .onAppear {
-                                    withAnimation(.shakeSpring()) {
-                                        wrongKeyShake = 3
-                                    }
-                                }
-                            Style.monospaceBig("\(viewModel.key.wrappedValue+1)").offset(x: -30)
+                            Style.monospaceBig("\(viewModel.key.wrappedValue+1)").foregroundColor(.black).offset(x: -30)
+                        }
+                        .shake(with: wrongKeyShake)
+                        .onAppear {
+                            withAnimation(.shakeSpring()) {
+                                wrongKeyShake = 3
+                            }
                         }
                         .onDrag {
                             decryptPulseStart = true
@@ -165,7 +167,7 @@ struct CipherGraphView: View {
                     } else if viewModel.pageFiveSub || viewModel.pageSix {
                         ZStack {
                             Image("key_wrong")
-                            Style.monospaceBig("\(viewModel.key.wrappedValue+1)").offset(x: -30)
+                            Style.monospaceBig("\(viewModel.key.wrappedValue+1)").foregroundColor(.black).offset(x: -30)
                         }
                         Spacer()
                     }
@@ -219,7 +221,6 @@ struct CipherGraphView: View {
             } else { // uppercase
                 if let oldIndex = uppercaseLetter.firstIndex(of: String(letter)) {
                     let newIndex = (oldIndex - key) %% 26
-                    print(newIndex)
                     decrypted.append(uppercaseLetter[newIndex])
                 }
             }
