@@ -35,9 +35,9 @@ struct CipherGraphView: View {
                         ZStack {
                             Image("key")
                             Style.monospaceBig("\(key)").offset(x: -30)
-                        }
+                        }.draggable("enc")
                         Text("Encryption Key")
-                    }.draggable("enc")
+                    }
                 } else {
                     // Fallback on earlier versions
                 }
@@ -47,9 +47,9 @@ struct CipherGraphView: View {
                         ZStack {
                             Image("key")
                             Style.monospaceBig("\(key)").offset(x: -30)
-                        }
+                        }.draggable("dec")
                         Text("Decryption Key")
-                    }.draggable("dec")
+                    }
                 } else {
                     // Fallback on earlier versions
                 }

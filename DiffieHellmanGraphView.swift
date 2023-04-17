@@ -1,102 +1,214 @@
 import SwiftUI
 
 struct DiffieHellmanGraphView: View {
-    let g = 5
-    let p = 23
     
-    @Binding var pageOne: Bool
-    @Binding var pageTwo: Bool
-    @Binding var pageThree: Bool
-    @Binding var pageFour: Bool
-    @Binding var correctness: Bool
+    @ObservedObject var viewModel: DiffieHellmanViewModel
     
-    @Binding var userInt: Int
-    @Binding var userPublicKey: Int
-    @Binding var computerPublicKey: Int
-    
-    @Binding var sharedSecretKey: Int
+    @State private var numBase = 0
     
     var body: some View {
-        VStack {
-            boxify(Text("Prime base\n") + Style.monospaceBig("g = \(g)"), color: .blue).showOnBindings($pageTwo, $pageThree, $pageFour)
-            Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour).invertOnDarkTheme()
-            boxify(Text("Prime modulus\n") + Style.monospaceBig("p = \(p)"), color: .blue).showOnBindings($pageTwo, $pageThree, $pageFour)
-            HStack{
+        ZStack {
+            if viewModel.pageTwo || viewModel.baseMixable || viewModel.mixedDroppable || viewModel.sharedMixable || viewModel.sharedRevealed || viewModel.secretRevealed {
                 VStack {
-                    Image("arrow_left").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour).invertOnDarkTheme()
-                    boxify(Text("Your Secret\n") + Style.monospaceBig("a = \(userInt)"), color: .red).showOnBindings($pageTwo, $pageThree, $pageFour)
-                    Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageThree, $pageFour).invertOnDarkTheme()
-                    if !pageFour {
-                        if #available(iOS 16.0, *) {
-                            boxify(Text("Your Public Key\n") + Style.monospaceBig("A = \(userPublicKey)"), color: .blue).draggable(1).showOnBindings($pageThree)
-                        } else {
-                            boxify(Text("Your Public Key\n") + Style.monospaceBig("A = \(userPublicKey)"), color: .blue)
-                            // MORE FALLBACK
-                        }
-                    } else {
-                        boxify(Text("Your Public Key\n") + Style.monospaceBig("A = \(userPublicKey)"), color: .blue)
+                    HStack {
+                        Text("Your colors").font(.system(.headline)).frame(maxWidth: .infinity)
+                        Spacer().frame(maxWidth: 25)
+                        Text("Computer colors").font(.system(.headline)).frame(maxWidth: .infinity)
                     }
-                }
-                Spacer().frame(maxWidth: 25)
-                VStack {
-                    Image("arrow_right").resizable().frame(width: 18, height: 18).showOnBindings($pageTwo, $pageThree, $pageFour).invertOnDarkTheme()
-                    boxify(Text("Computer Secret\n") + Style.monospaceBig("b = ?"), color: .red).showOnBindings($pageTwo, $pageThree, $pageFour)
-                    Image("arrow_down").resizable().frame(width: 18, height: 18).showOnBindings($pageThree, $pageFour).invertOnDarkTheme()
-                    boxify(Text("Computer Public Key\n") + Style.monospaceBig("B = \(computerPublicKey)"), color: .blue).showOnBindings($pageThree, $pageFour)
-                }
-            }
-            Image("arrow_cross").resizable().aspectRatio(contentMode: .fit).frame( height: 25).showOnBindings($pageThree, $pageFour).invertOnDarkTheme()
-            HStack {
-                VStack {
-                    boxify(Text("Computer Public Key\n") + Style.monospaceBig("B = \(computerPublicKey)"), color: .blue).showOnBindings( $pageThree, $pageFour)
-                    Image("arrow_right").resizable().frame(width: 18, height: 18).showOnBindings($correctness).invertOnDarkTheme()
-                }
-                Spacer().frame(maxWidth: 25)
-                VStack {
+                    
                     if #available(iOS 16.0, *) {
-                        if !pageFour {
-                            boxify(Text("Drop your public key here!"), color: .white, textColor: .black).frame(minHeight: 78).border(.gray).showOnBindings($pageThree, $pageFour)
-                                .dropDestination(for: Int.self) { (items, point) in
-                                    print("dropped!")
-                                    pageThree = false
-                                    pageFour = true
-                                    return true
+                        Style.boxify(Text("Base Color"), color: viewModel.baseColor)
+                            .draggable("base")
+                            .shake(with: numBase)
+                            .onReceive(viewModel.$baseMixable) { bool in
+                                if bool {
+                                    withAnimation(.shakeSpring()) {
+                                        numBase = 3
+                                    }
+                                    
                                 }
-                        } else {
-                            boxify(Text("Your Public Key\n") + Style.monospaceBig("A = \(userPublicKey)"), color: .blue)
-                        }
+                            }
+                            .disabled(viewModel.baseMixable == false)
                     } else {
-                        // Fallback on earlier versions
+                        Style.boxify(Text("Base Color"), color: viewModel.baseColor)
                     }
-                    Image("arrow_left").resizable().frame(width: 18, height: 18).showOnBindings($correctness).invertOnDarkTheme()
+                    
+                    HStack {
+                        VStack {
+                            Image("plus")
+                                .resizable()
+                                .frame(width: 18, height: 18)
+                                .invertOnDarkTheme()
+                                .transition(.enterFromBottom)
+                            
+                            // user secret
+                            if #available(iOS 16.0, *) {
+                                Style.boxify(Text("User Secret"), color: viewModel.userColor, border: .red)
+                                    .dropDestination(for: String.self) { msg, pos in
+                                        viewModel.baseMixable = false
+                                        viewModel.mixedDroppable = true
+                                        return true
+                                    }
+                                    .disabled(viewModel.baseMixable != true)
+                            } else {
+                                Style.boxify(Text("User Secret"), color: viewModel.userColor, border: .red)
+                            }
+                        }
+                        Spacer().frame(maxWidth: 25)
+                        VStack {
+                            Image("plus")
+                                .resizable()
+                                .frame(width: 18, height: 18)
+                                .invertOnDarkTheme()
+                                .transition(.enterFromBottom)
+                            
+                            // computer secret
+                            if !viewModel.secretRevealed {
+                                Style.boxify(Text("Computer Secret: ??"), color: .gray, border: .red)
+                            } else {
+                                Style.boxify(Text("Computer Secret"), color: viewModel.computerColor, border: .red).transition(.opacity)
+                            }
+                        }
+                    }
+                    
+                    
+                    if viewModel.mixedDroppable || viewModel.sharedMixable || viewModel.sharedRevealed || viewModel.secretRevealed {
+                        HStack {
+                            VStack {
+                                Image("arrow_down")
+                                    .resizable()
+                                    .frame(width: 18, height: 18)
+                                    .invertOnDarkTheme()
+                                    .transition(.enterFromBottom)
+                                
+                                // user blended
+                                if #available(iOS 16.0, *) {
+                                    Style.boxify(Text("User Public Key"), color: viewModel.userBlended.wrappedValue).draggable("mixed").disabled(viewModel.mixedDroppable != true)
+                                } else {
+                                    Style.boxify(Text("User Public Key"), color: viewModel.userBlended.wrappedValue)
+                                }
+                                
+                            }
+                            Spacer().frame(maxWidth: 25)
+                            VStack {
+                                Image("arrow_down")
+                                    .resizable()
+                                    .frame(width: 18, height: 18)
+                                    .invertOnDarkTheme()
+                                    .transition(.enterFromBottom)
+                                
+                                // computer mixed
+                                Style.boxify(Text("Computer Public Key"), color: viewModel.computerBlended.wrappedValue)
+                            }
+                        }.transition(.enterFromBottom)
+                        
+                        if viewModel.pageFour || viewModel.sharedMixable || viewModel.sharedRevealed || viewModel.secretRevealed {
+                            Image("arrow_cross").resizable().aspectRatio(contentMode: .fit).frame( height: 25).invertOnDarkTheme().transition(.enterFromBottom)
+                            
+                            HStack {
+                                VStack {
+                                    // computer mixed
+                                    if #available(iOS 16.0, *) {
+                                        Style.boxify(Text("Computer Public Key"), color: viewModel.computerBlended.wrappedValue)
+                                            .draggable("shared")
+                                            .disabled(viewModel.sharedMixable != true)
+                                    } else {
+                                        Style.boxify(Text("Computer Public Key"), color: viewModel.computerBlended.wrappedValue)
+                                    }
+                                }
+                                Spacer().frame(maxWidth: 25)
+                                VStack {
+                                    // drop area for user mixed
+                                    if viewModel.mixedDroppable, #available(iOS 16.0, *) {
+                                        Style.boxify(Text("Drop your public key here!"), color: .white, textColor: .black, border: .gray)
+                                            .dropDestination(for: String.self) { _, _ in
+                                                viewModel.pageFour = false
+                                                viewModel.pageFive = true
+                                                viewModel.mixedDroppable = false
+                                                viewModel.sharedMixable = true
+                                                return true
+                                            }
+                                            .disabled(viewModel.mixedDroppable != true)
+                                    } else {
+                                        Style.boxify(Text("User Public Key"), color: viewModel.userBlended.wrappedValue)
+                                    }
+                                }
+                            }.transition(.enterFromBottom)
+                            
+                            if viewModel.sharedMixable || viewModel.sharedRevealed || viewModel.secretRevealed {
+                                HStack {
+                                    VStack {
+                                        Image("plus")
+                                            .resizable()
+                                            .frame(width: 18, height: 18)
+                                            .invertOnDarkTheme()
+                                            .transition(.enterFromBottom)
+                                        
+                                        // user secret
+                                        if #available(iOS 16.0, *) {
+                                            Style.boxify(Text("User Secret"), color: viewModel.userColor, border: .red).dropDestination(for: String.self) { msg, pos in
+                                                viewModel.sharedMixable = false
+                                                viewModel.sharedRevealed = true
+                                                return true
+                                            }.disabled(viewModel.sharedMixable != true)
+                                        } else {
+                                            Style.boxify(Text("User Secret"), color: viewModel.userColor, border: .red)
+                                        }
+                                        
+                                        // shared secret
+                                        if viewModel.sharedRevealed {
+                                            VStack {
+                                                Image("arrow_down")
+                                                    .resizable()
+                                                    .frame(width: 18, height: 18)
+                                                    .invertOnDarkTheme()
+                                                Style.boxify(Text("Shared Secret Key"), color: viewModel.sharedBlended.wrappedValue, border: .red)
+                                            }.transition(.enterFromBottom)
+                                        }
+                                    }
+                                    Spacer().frame(maxWidth: 25)
+                                    VStack {
+                                        Image("plus")
+                                            .resizable()
+                                            .frame(width: 18, height: 18)
+                                            .invertOnDarkTheme()
+                                            .transition(.enterFromBottom)
+                                        
+                                        // computer secret
+                                        if !viewModel.secretRevealed {
+                                            Style.boxify(Text("Computer Secret: ??"), color: .gray, border: .red)
+                                        } else {
+                                            Style.boxify(Text("Computer Secret"), color: viewModel.computerColor, border: .red).transition(.opacity)
+                                        }
+                                        
+                                        if viewModel.sharedRevealed {
+                                            VStack{
+                                                Image("arrow_down")
+                                                    .resizable()
+                                                    .frame(width: 18, height: 18)
+                                                    .invertOnDarkTheme()
+                                                
+                                                // shared secret
+                                                if viewModel.secretRevealed {
+                                                    Style.boxify(Text("Shared Secret Key"), color: viewModel.sharedBlended.wrappedValue, border: .red).transition(.opacity)
+                                                } else {
+                                                    Style.boxify(Text("Shared Secret Key: ??"), color: .gray, border: .red)
+                                                }
+                                            }.transition(.enterFromBottom)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+                .transition(.enterFromBottom)
+                .padding()
             }
-            //boxify(Text("Shared Secret Key \n") + Style.monospaceBig("\(sharedSecretKey)"), color: .purple).showOnBindings($correctness)
-            if correctness {
-                if #available(iOS 16.0, *) {
-                    boxify(Text("Shared Secret Key \n") + Style.monospaceBig("\(sharedSecretKey)"), color: .purple).transition(.moveAndFade)
-                } else {
-                    boxify(Text("Shared Secret Key \n") + Style.monospaceBig("\(sharedSecretKey)"), color: .purple)
-                }
-            }
-        }
-        .animation(.default, value: correctness)
-        .padding()
-        .multilineTextAlignment(.center)
-    }
-    
-    func boxify(_ t: Text, color: Color, textColor: Color = .white) -> some View {
-        if #available(iOS 16.0, *) {
-            return t.padding().frame(maxWidth: .infinity).foregroundColor(textColor).background(color).transition(.push(from: .bottom))
-        } else {
-            return t.padding().frame(maxWidth: .infinity).foregroundColor(textColor).background(color)
-        }
-    }
-}
-
-@available(iOS 16.0, *)
-extension Int: Transferable {
-    public static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(for: Int.self, contentType: .data)
+        }.animation(.default, value: viewModel.pageTwo)
+            .animation(.default, value: viewModel.mixedDroppable)
+            .animation(.default, value: viewModel.pageFour)
+            .animation(.default, value: viewModel.sharedRevealed)
+            .animation(.default, value: viewModel.secretRevealed)
     }
 }

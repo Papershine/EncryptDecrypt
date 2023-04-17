@@ -14,7 +14,7 @@ struct IntroView: View {
                     .font(Font.custom("Menlo", size: 75, relativeTo: .headline))
                     .multilineTextAlignment(.center)
                     .padding([.bottom], 5).padding()
-                Text("Learn more about symmetric and asymmetric encryption algorithms").font(.system(size: 30)).padding()
+                Text("Learn more about encryption!").font(.system(size: 30)).padding()
                 Spacer()
                 Text("Tap to Begin").font(Font.custom("Menlo", size: 30, relativeTo: .body)).padding()
             }
@@ -30,16 +30,3 @@ struct IntroView: View {
     }
 }
 
-// blue rounded button, gray when disabled
-struct BlueButton: ButtonStyle {
-    @Environment(\.isEnabled) var isEnabled
-    
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding([.horizontal], 25)
-            .padding([.vertical], 10)
-            .foregroundColor(.white)
-            .background(isEnabled ? .blue : .gray)
-            .clipShape(Capsule())
-    }
-}
