@@ -60,8 +60,9 @@ struct DiffieHellmanView: View {
                                 // hide this page and display next page
                                 viewModel.pageThree = false
                                 viewModel.pageFour = true
+                                viewModel.mixedDroppable = true
                             }
-                            .disabled(viewModel.mixedDroppable == false)
+                            .disabled(viewModel.baseMixable == true)
                             .buttonStyle(BlueButton())
                         }
                         .frame(maxWidth: .infinity)
@@ -85,7 +86,7 @@ struct DiffieHellmanView: View {
                     }
                     if viewModel.pageSix {
                         VStack {
-                            DiffieHellmanTextSix().frame(maxWidth: .infinity)
+                            DiffieHellmanTextSix()
                             
                             Button("Reveal Computer Secret Colors") {
                                 viewModel.secretRevealed = true
@@ -189,8 +190,8 @@ struct DiffieHellmanTextSix: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Great job! You have created your 'shared secret key' color.")
             Text("For demonstration purposes, press the button below to reveal my secret colors.")
-            Text("In the real world you won't know my secret color.")
-        }
+            Text("In an actual situation you won't know my secret color.").frame(maxWidth: .infinity)
+        }.frame(maxWidth: .infinity)
     }
 }
 struct DiffieHellmanTextSixSub: View {

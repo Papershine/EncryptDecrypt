@@ -9,6 +9,9 @@ struct QuantumGraphView: View {
     @Binding var publicKeyColor: Color
     @Binding var secretKeyColor: Color
     
+    @State private var publicKeyShake = 0
+    @State private var quantumPulseStart = false
+    
     var body: some View {
         GeometryReader { geo in
             VStack {
@@ -18,7 +21,18 @@ struct QuantumGraphView: View {
                 if #available(iOS 16.0, *) {
                     Style.boxify(Text("Your public key"), color: publicKeyColor)
                         .frame(maxWidth: geo.size.width*0.5)
-                        .draggable("key")
+                        .shake(with: publicKeyShake)
+                        .onReceive(viewModel.$publicKeyDraggable) { bool in
+                            if bool {
+                                withAnimation(.shakeSpring()) {
+                                    publicKeyShake = 3
+                                }
+                            }
+                        }
+                        .onDrag {
+                            quantumPulseStart = true
+                            return NSItemProvider(object: "key" as NSItemProviderWriting)
+                        }
                         .disabled(viewModel.publicKeyDraggable == false)
                 } else {
                     Style.boxify(Text("Your public key"), color: publicKeyColor)
@@ -33,14 +47,17 @@ struct QuantumGraphView: View {
                 // Quantum Computer with Shor's Algorithm
                 if #available(iOS 16.0, *) {
                     Image("quantum_computer")
+                        .scaleEffect(quantumPulseStart ? 1.05 : 1)
+                        .animation(quantumPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: quantumPulseStart)
                         .dropDestination(for: String.self) { _, _ in
+                            quantumPulseStart = false
                             viewModel.publicKeyDraggable = false
                             viewModel.pageTwo = false
                             viewModel.pageThree = true
                             return true
                         }
                 }
-                Text("Quantum Computer running Shor's Algorithm")
+                Text("Quantum computer running Shor's Algorithm")
                 
                 if viewModel.pageThree {
                     // Unmixed colors

@@ -5,10 +5,17 @@ struct DiffieHellmanGraphView: View {
     @ObservedObject var viewModel: DiffieHellmanViewModel
     
     @State private var baseShake = 0
+    @State private var userPublicShake = 0
+    @State private var computerPublicShake = 0
+    
+    @State private var basePulseStart: Bool = false
+    @State private var publicKeyPulseStart: Bool = false
+    @State private var secretKeyPulseStart: Bool = false
     
     var body: some View {
+        
         ZStack {
-            if viewModel.pageTwo || viewModel.baseMixable || viewModel.mixedDroppable || viewModel.sharedMixable || viewModel.sharedRevealed || viewModel.secretRevealed {
+            if viewModel.pageTwo || viewModel.pageThree || viewModel.baseMixable || viewModel.mixedDroppable || viewModel.sharedMixable || viewModel.sharedRevealed || viewModel.secretRevealed {
                 VStack {
                     HStack {
                         Text("Your colors").font(.system(.headline)).frame(maxWidth: .infinity)
@@ -16,9 +23,13 @@ struct DiffieHellmanGraphView: View {
                         Text("Computer colors").font(.system(.headline)).frame(maxWidth: .infinity)
                     }
                     
+                    
                     if #available(iOS 16.0, *) {
                         Style.boxify(Text("Base Color"), color: viewModel.baseColor)
-                            .draggable("base")
+                            .onDrag {
+                                basePulseStart = true
+                                return NSItemProvider(object: "base" as NSItemProviderWriting)
+                            }
                             .shake(with: baseShake)
                             .onReceive(viewModel.$baseMixable) { bool in
                                 if bool {
@@ -43,9 +54,11 @@ struct DiffieHellmanGraphView: View {
                             // user secret
                             if #available(iOS 16.0, *) {
                                 Style.boxify(Text("User Secret"), color: viewModel.userColor, border: .red)
+                                    .scaleEffect(basePulseStart ? 1.05 : 1)
+                                    .animation(basePulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: basePulseStart)
                                     .dropDestination(for: String.self) { msg, pos in
+                                        basePulseStart = false
                                         viewModel.baseMixable = false
-                                        viewModel.mixedDroppable = true
                                         return true
                                     }
                                     .disabled(viewModel.baseMixable != true)
@@ -71,7 +84,7 @@ struct DiffieHellmanGraphView: View {
                     }
                     
                     
-                    if viewModel.mixedDroppable || viewModel.sharedMixable || viewModel.sharedRevealed || viewModel.secretRevealed {
+                    if (viewModel.pageThree && !viewModel.baseMixable) || viewModel.mixedDroppable || viewModel.sharedMixable || viewModel.sharedRevealed || viewModel.secretRevealed {
                         HStack {
                             VStack {
                                 Image("arrow_down")
@@ -82,7 +95,20 @@ struct DiffieHellmanGraphView: View {
                                 
                                 // user blended
                                 if #available(iOS 16.0, *) {
-                                    Style.boxify(Text("User Public Key"), color: viewModel.userBlended.wrappedValue).draggable("mixed").disabled(viewModel.mixedDroppable != true)
+                                    Style.boxify(Text("User Public Key"), color: viewModel.userBlended.wrappedValue)
+                                        .onDrag {
+                                            publicKeyPulseStart = true
+                                            return NSItemProvider(object: "mixed" as NSItemProviderWriting)
+                                        }
+                                        .shake(with: userPublicShake)
+                                        .onReceive(viewModel.$mixedDroppable) { bool in
+                                            if bool {
+                                                withAnimation(.shakeSpring()) {
+                                                    userPublicShake = 3
+                                                }
+                                            }
+                                        }
+                                        .disabled(viewModel.mixedDroppable == false)
                                 } else {
                                     Style.boxify(Text("User Public Key"), color: viewModel.userBlended.wrappedValue)
                                 }
@@ -109,7 +135,18 @@ struct DiffieHellmanGraphView: View {
                                     // computer mixed
                                     if #available(iOS 16.0, *) {
                                         Style.boxify(Text("Computer Public Key"), color: viewModel.computerBlended.wrappedValue)
-                                            .draggable("shared")
+                                            .shake(with: computerPublicShake)
+                                            .onReceive(viewModel.$sharedMixable) { bool in
+                                                if bool {
+                                                    withAnimation(.shakeSpring()) {
+                                                        computerPublicShake = 3
+                                                    }
+                                                }
+                                            }
+                                            .onDrag {
+                                                secretKeyPulseStart = true
+                                                return NSItemProvider(object: "shared" as NSItemProviderWriting)
+                                            }
                                             .disabled(viewModel.sharedMixable != true)
                                     } else {
                                         Style.boxify(Text("Computer Public Key"), color: viewModel.computerBlended.wrappedValue)
@@ -120,7 +157,10 @@ struct DiffieHellmanGraphView: View {
                                     // drop area for user mixed
                                     if viewModel.mixedDroppable, #available(iOS 16.0, *) {
                                         Style.boxify(Text("Drop your public key here!"), color: .white, textColor: .black, border: .gray)
+                                            .scaleEffect(publicKeyPulseStart ? 1.05 : 1)
+                                            .animation(publicKeyPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: publicKeyPulseStart)
                                             .dropDestination(for: String.self) { _, _ in
+                                                publicKeyPulseStart = false
                                                 viewModel.pageFour = false
                                                 viewModel.pageFive = true
                                                 viewModel.mixedDroppable = false
@@ -145,11 +185,16 @@ struct DiffieHellmanGraphView: View {
                                         
                                         // user secret
                                         if #available(iOS 16.0, *) {
-                                            Style.boxify(Text("User Secret"), color: viewModel.userColor, border: .red).dropDestination(for: String.self) { msg, pos in
-                                                viewModel.sharedMixable = false
-                                                viewModel.sharedRevealed = true
-                                                return true
-                                            }.disabled(viewModel.sharedMixable != true)
+                                            Style.boxify(Text("User Secret"), color: viewModel.userColor, border: .red)
+                                                .scaleEffect(secretKeyPulseStart ? 1.05 : 1)
+                                                .animation(secretKeyPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: secretKeyPulseStart)
+                                                .dropDestination(for: String.self) { msg, pos in
+                                                    secretKeyPulseStart = false
+                                                    viewModel.sharedMixable = false
+                                                    viewModel.sharedRevealed = true
+                                                    return true
+                                                }
+                                                .disabled(viewModel.sharedMixable == false)
                                         } else {
                                             Style.boxify(Text("User Secret"), color: viewModel.userColor, border: .red)
                                         }
@@ -205,6 +250,7 @@ struct DiffieHellmanGraphView: View {
                 .padding()
             }
         }.animation(.default, value: viewModel.pageTwo)
+            .animation(.default, value: viewModel.baseMixable)
             .animation(.default, value: viewModel.mixedDroppable)
             .animation(.default, value: viewModel.pageFour)
             .animation(.default, value: viewModel.sharedRevealed)

@@ -9,6 +9,9 @@ struct CipherView: View {
     @Binding var pageDiffie: Bool
     
     @State var message = ""
+    var originalMessage = ""
+    var encryptedMessage = ""
+    var wrongMessage = ""
     
     @State var keyIndexDbl = 15.0
     var key: Binding<Int> { Binding(
@@ -26,6 +29,7 @@ struct CipherView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Ceasar Cipher").font(.system(.title)).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .center)
+                    Spacer()
                     if pageOne {
                         CipherTextOne()
                         TextField("Enter your word here", text: $message)
@@ -108,11 +112,10 @@ struct CipherView: View {
 struct CipherTextOne: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("When sending each other messages or storing sensitive information, we usually want to encode the information so that it cannot be easily seen by others for the sake of privacy.")
+            Text("Let's see how we can protect a message that you want to send.")
             Text("To do so, we use a key in an algorithm to change the plaintext into gibberish, or ciphertext.")
             Text("This key can also be used to change the gibberish back to plaintext.")
-            Text("This is called 'symmetric encryption'.")
-            Text("Let's demonstrate with an example. Choose some word or sentence that you want to encrypt.")
+            Text("Type some word or sentence below that you want to encrypt.")
         }
     }
 }
@@ -121,9 +124,11 @@ struct CipherTextTwo: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Then, we need to choose some number to be the key.")
+            /*
             Text("This key is used to encrypt and decrypt the message. When we pass the key into the encryption algorithm, the algorithm scrambles the message based on the key. The same key can also unscramble the message using a decryption algorithm.")
             Text("For this example, we will use the very simple alogrithm called the Ceasar Cipher.")
             Text("This algorithm shifts every letter by the number provided in the key. For instance, if the key is ") + Style.monospace("3") + Text(" , then the letter 'A' will be shifted up by 3 indexes to the letter 'D'. Also, since there are only 26 letters, the algorithm wraps around at the end. That is, the letter 'Z' shifted up by 3 indexes will be the letter 'C'.")
+            */
             Text("Use the slider to choose the value of a key below. It can be any integer.")
         }
     }
@@ -132,18 +137,21 @@ struct CipherTextTwo: View {
 struct CipherTextThree: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Try out this encryption algorithm!")
-            Text("You can encrypt your message by dragging and dropping the encryption key on top of your message.")
-            Text("You can then decrypt your message by dragging and dropping the decryption key on top of your message.")
-            Text("Press hard on a key to pick it up and move it around.")
-            Text("This Ceasar Cipher encryption method is very easy to crack, therefore it is not used in real life situations. However, the gist is still the same with practical algorithms like AES (Advanced Encryption Standard), where the same key is fed into an algorithm for encryption and decryption.")
-            Text("You can also change your message and key value below to try out different encryption combinations!")
-            Text("Message:")
+            Text("Now, we can encrypt our message with this encryption key.")
+            Text("Drag and drop the key into the encryption algorithm to do so.")
         }
     }
 }
 
 struct CipherTextFour: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("We can also decrypt our message with this encryption key.")
+        }
+    }
+}
+
+struct CipherTextSix: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Therefore, if anybody knows your key, they will be able to decrypt your messages or anything that you store!")

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct Style {
     
+    // font shortcuts
     static func monospace(_ t: String, color: Color = .blue) -> Text {
         return Text(t).font(.custom("menlo", size: 18, relativeTo: .body)).foregroundColor(color)
     }
@@ -22,8 +23,16 @@ struct Style {
         return Text(t).font(.custom("menlo", size: 30, relativeTo: .body)).foregroundColor(color)
     }
     
+    // create a colored box
     static func boxify(_ t: Text = Text(" "), color: Color, textColor: Color = .white, border: Color = .clear) -> some View {
-        return t.padding().frame(maxWidth: .infinity, minHeight: 78).foregroundColor(textColor).background(color).border(border, width: 2)
+        return t
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 78)
+            .foregroundColor(textColor)
+            .background(color)
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(border, lineWidth: 2))
+            //.border(border, width: 2)
     }
 }
 
@@ -42,6 +51,7 @@ struct BlueButton: ButtonStyle {
     }
 }
 
+// custom transitions
 extension AnyTransition {
     static var enterFromBottom: AnyTransition {
         .asymmetric(
@@ -63,6 +73,7 @@ extension AnyTransition {
     }
 }
 
+// invert on dark mode
 struct ColorAdaptive: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     
@@ -76,7 +87,6 @@ struct ColorAdaptive: ViewModifier {
 }
 
 extension View {
-    
     @ViewBuilder func showOnBindings(_ bools: Binding<Bool>...) -> some View {
         if bools.contains(where: { $0.wrappedValue == true }) {
             self
@@ -90,24 +100,8 @@ extension View {
     }
 }
 
-extension UIColor {
-    
-    static func blend(color1: UIColor, intensity1: CGFloat = 0.5, color2: UIColor, intensity2: CGFloat = 0.5) -> UIColor {
-        let total = intensity1 + intensity2
-        let l1 = intensity1/total
-        let l2 = intensity2/total
-        guard l1 > 0 else { return color2}
-        guard l2 > 0 else { return color1}
-        var (r1, g1, b1, a1): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
-        var (r2, g2, b2, a2): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
 
-        color1.getRed(&r1, green: &g1, blue: &b1, alpha: &a1)
-        color2.getRed(&r2, green: &g2, blue: &b2, alpha: &a2)
-
-        return UIColor(red: l1*r1 + l2*r2, green: l1*g1 + l2*g2, blue: l1*b1 + l2*b2, alpha: l1*a1 + l2*a2)
-    }
-}
-
+// blend two colors together
 extension Color {
     func blend(color: Color) -> Color {
         var r1: CGFloat = 0.0
@@ -124,8 +118,8 @@ extension Color {
     }
 }
 
-// vibrating animation
 
+// vibrating animation
 struct Shake: AnimatableModifier {
     var shakes: CGFloat = 0
     
@@ -150,38 +144,40 @@ extension View {
 
 extension Animation {
     static func shakeSpring() -> Animation {
-        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(3).delay(3)
+        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(2).delay(2)
     }
 }
 
 
-// Modulus operator that produces positive results
-infix operator %%
-
-extension Int {
-    static func %% (_ left: Int, _ right: Int) -> Int {
-        precondition(right > 0, "The modulus must be positive")
-        if left >= 0 { return left % right }
-        if left >= -right { return (left + right) }
-        return ((left % right) + right) % right
-    }
-}
-
-// exponentiation operator
-precedencegroup ExponentiationPrecedence {
-  associativity: right
-  higherThan: MultiplicationPrecedence
-}
-
-infix operator ^^ : ExponentiationPrecedence
-infix operator ^^^: ExponentiationPrecedence
-
-// regular exponentiation
-func ^^ (_ base: Int, _ exp: Int) -> Int {
-  return Int(pow(Double(base), Double(exp)))
-}
-
-// very large exponentiation
-func ^^^ (_ base: Int, _ exp: Int) -> UInt64 {
-    return UInt64(pow(Double(base), Double(exp)))
-}
+ // Modulus operator that produces positive results
+ infix operator %%
+ 
+ extension Int {
+ static func %% (_ left: Int, _ right: Int) -> Int {
+ precondition(right > 0, "The modulus must be positive")
+ if left >= 0 { return left % right }
+ if left >= -right { return (left + right) }
+ return ((left % right) + right) % right
+ }
+ }
+ 
+/*
+ // exponentiation operator
+ precedencegroup ExponentiationPrecedence {
+ associativity: right
+ higherThan: MultiplicationPrecedence
+ }
+ 
+ infix operator ^^ : ExponentiationPrecedence
+ infix operator ^^^: ExponentiationPrecedence
+ 
+ // regular exponentiation
+ func ^^ (_ base: Int, _ exp: Int) -> Int {
+ return Int(pow(Double(base), Double(exp)))
+ }
+ 
+ // very large exponentiation
+ func ^^^ (_ base: Int, _ exp: Int) -> UInt64 {
+ return UInt64(pow(Double(base), Double(exp)))
+ }
+ */
