@@ -31,7 +31,7 @@ struct Style {
             .foregroundColor(textColor)
             .background(color)
             .clipShape(Capsule())
-            .overlay(Capsule().stroke(border, lineWidth: 2))
+            .overlay(Capsule().stroke(border, lineWidth: 4))
             //.border(border, width: 2)
     }
 }
@@ -46,6 +46,21 @@ struct BlueButton: ButtonStyle {
             .padding([.vertical], 10)
             .foregroundColor(.white)
             .background(isEnabled ? .blue : .gray)
+            .clipShape(Capsule())
+            .frame(maxWidth: .infinity, alignment: .center)
+    }
+}
+
+// indigo rounded button, gray when disabled
+struct IndigoButton: ButtonStyle {
+    @Environment(\.isEnabled) var isEnabled
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding([.horizontal], 25)
+            .padding([.vertical], 10)
+            .foregroundColor(.white)
+            .background(isEnabled ? .indigo : .gray)
             .clipShape(Capsule())
             .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -69,6 +84,18 @@ extension AnyTransition {
     static var pushFromRight: AnyTransition {
         .asymmetric(
             insertion: .move(edge: .trailing),
+            removal: .move(edge: .leading))
+    }
+    
+    static var pushForEnding: AnyTransition {
+        .asymmetric(
+            insertion: .move(edge: .trailing),
+            removal: .move(edge: .trailing))
+    }
+    
+    static var pushForStart: AnyTransition {
+        .asymmetric(
+            insertion: .move(edge: .leading),
             removal: .move(edge: .leading))
     }
 }
@@ -146,20 +173,24 @@ extension Animation {
     static func shakeSpring() -> Animation {
         return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(2).delay(2)
     }
+    
+    static func shakeSpringFast() -> Animation {
+        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(2).delay(1)
+    }
 }
 
 
  // Modulus operator that produces positive results
- infix operator %%
- 
- extension Int {
- static func %% (_ left: Int, _ right: Int) -> Int {
- precondition(right > 0, "The modulus must be positive")
- if left >= 0 { return left % right }
- if left >= -right { return (left + right) }
- return ((left % right) + right) % right
- }
- }
+infix operator %%
+
+extension Int {
+    static func %% (_ left: Int, _ right: Int) -> Int {
+        precondition(right > 0, "The modulus must be positive")
+        if left >= 0 { return left % right }
+        if left >= -right { return (left + right) }
+        return ((left % right) + right) % right
+    }
+}
  
 /*
  // exponentiation operator

@@ -13,14 +13,13 @@ struct DiffieHellmanView: View {
     var body: some View {
         GeometryReader { geo in
             HStack{
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Diffie Hellman Key Exchange").font(.system(.title)).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .center)
-                    Spacer()
+                VStack(alignment: .leading, spacing: 25) {
+                    Text("Diffie Hellman Key Exchange").font(.system(.title)).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading)
                     if viewModel.pageOne {
                         // display page one text
                         VStack {
                             DiffieHellmanTextOne()
-                            Button("Next") {
+                            Button("Next >") {
                                 // hide this page and display next page
                                 viewModel.pageOne = false
                                 viewModel.pageTwo = true
@@ -30,11 +29,8 @@ struct DiffieHellmanView: View {
                     }
                     if viewModel.pageTwo {
                         // display page two text
-                        VStack{
-                            HStack {
-                                DiffieHellmanTextTwo()
-                                Spacer()
-                            }
+                        VStack(alignment: .leading, spacing: 25) {
+                            DiffieHellmanTextTwo()
                             Picker("Pick your secret color", selection: $viewModel.userColor) {
                                 Text("Green").tag(Color.green)
                                 Text("Cyan").tag(Color.cyan)
@@ -43,7 +39,7 @@ struct DiffieHellmanView: View {
                             }
                             .padding(2)
                             .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
-                            Button("Next") {
+                            Button("Next >") {
                                 // hide this page and display next page
                                 viewModel.pageTwo = false
                                 viewModel.pageThree = true
@@ -54,9 +50,9 @@ struct DiffieHellmanView: View {
                     }
                     if viewModel.pageThree {
                         // display page three text
-                        VStack {
+                        VStack(alignment: .leading, spacing: 25) {
                             DiffieHellmanTextThree()
-                            Button("Next") {
+                            Button("Next >") {
                                 // hide this page and display next page
                                 viewModel.pageThree = false
                                 viewModel.pageFour = true
@@ -73,9 +69,9 @@ struct DiffieHellmanView: View {
                         DiffieHellmanTextFour().frame(maxWidth: .infinity).transition(.pushFromBottom)
                     }
                     if viewModel.pageFive {
-                        VStack {
+                        VStack(alignment: .leading, spacing: 25) {
                             DiffieHellmanTextFive()
-                            Button("Next") {
+                            Button("Next >") {
                                 // hide this page and display next page
                                 viewModel.pageFive = false
                                 viewModel.pageSix = true
@@ -85,7 +81,7 @@ struct DiffieHellmanView: View {
                         }.frame(maxWidth: .infinity).transition(.pushFromBottom)
                     }
                     if viewModel.pageSix {
-                        VStack {
+                        VStack(alignment: .leading, spacing: 25) {
                             DiffieHellmanTextSix()
                             
                             Button("Reveal Computer Secret Colors") {
@@ -97,7 +93,7 @@ struct DiffieHellmanView: View {
                             if viewModel.secretRevealed {
                                 VStack {
                                     DiffieHellmanTextSixSub()
-                                    Button("Next Chapter") {
+                                    Button("Next Chapter >") {
                                         // update data needed for next chapter
                                         publicKeyColor = viewModel.userBlended.wrappedValue
                                         secretKeyColor = viewModel.userColor
@@ -105,7 +101,7 @@ struct DiffieHellmanView: View {
                                         pageDiffie = false
                                         pageQuantum = true
                                     }
-                                    .buttonStyle(BlueButton())
+                                    .buttonStyle(IndigoButton())
                                     .disabled(viewModel.secretRevealed == false)
                                 }.transition(.enterFromBottom)
                             }
@@ -139,7 +135,7 @@ struct DiffieHellmanView: View {
 
 struct DiffieHellmanTextOne: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("Diffie Hellman is an algorithm that creates a 'secret' key that is shared between two users.")
             Text("We will simplify this by using colors instead of numbers. Let's create a shared color key, but only between me and you.")
         }
@@ -148,7 +144,7 @@ struct DiffieHellmanTextOne: View {
 
 struct DiffieHellmanTextTwo: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("We start with a publicly shared base color. Let's chose red.")
             Text("Then we each choose a secret color. This is not public, so we don't share this with each other.")
             Text("Choose your secret color below!")
@@ -158,7 +154,7 @@ struct DiffieHellmanTextTwo: View {
 
 struct DiffieHellmanTextThree: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("Mix the red color with your secret color.")
             Text("Do so by dragging and dropping the red color onto your secret color.")
             Text("This will create a mixed color, which we can call our individual 'public key'. Unlike the secret color, this is shared publicly to the other person.")
@@ -168,7 +164,7 @@ struct DiffieHellmanTextThree: View {
 
 struct DiffieHellmanTextFour: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("Let's exchange our public keys.")
             Text("I just sent you my public key, which is orange.")
             Text("Send me your public key by dragging and dropping your mixed color into my box.")
@@ -178,7 +174,7 @@ struct DiffieHellmanTextFour: View {
 
 struct DiffieHellmanTextFive: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("The last step is to mix the other person's 'public key' with your own secret color. That mixed color is our 'shared secret key'.")
             Text("Drag and drop my public key onto your secret color.")
         }
@@ -187,16 +183,16 @@ struct DiffieHellmanTextFive: View {
 
 struct DiffieHellmanTextSix: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("Great job! You have created your 'shared secret key' color.")
             Text("For demonstration purposes, press the button below to reveal my secret colors.")
-            Text("In an actual situation you won't know my secret color.").frame(maxWidth: .infinity)
-        }.frame(maxWidth: .infinity)
+            Text("In an actual situation you won't know my secret color.")
+        }
     }
 }
 struct DiffieHellmanTextSixSub: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("Notice that we got the same 'shared secret key' color!")
             Text("To an outsider that only sees the 'public keys', they cannot guess the 'shared secret key' color. This is because it is hard to unmix colors (the public keys). Without one of the secret colors, outsiders cannot know our 'shared secret key' color.")
             Text("However, if somebody somehow knows one of the two secret colors, they can guess the 'shared secret key' color very easily.")

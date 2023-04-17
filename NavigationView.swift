@@ -14,7 +14,7 @@ struct NavigationView: View {
     var body: some View {
         ZStack {
             if pageIntro {
-                IntroView(pageIntro: $pageIntro, pageCipher: $pageCipher).transition(.pushFromRight)
+                IntroView(pageIntro: $pageIntro, pageCipher: $pageCipher).transition(.pushForStart)
             }
             if pageCipher {
                 CipherView(pageCipher: $pageCipher, pageDiffie: $pageDiffie).transition(.pushFromRight)
@@ -26,12 +26,13 @@ struct NavigationView: View {
                 QuantumView(pageQuantum: $pageQuantum, pageFinish: $pageFinish, publicKeyColor: $publicKeyColor, secretKeyColor: $secretKeyColor).transition(.pushFromRight)
             }
             if pageFinish {
-                
+                FinishView(pageFinish: $pageFinish, pageIntro: $pageIntro).transition(.pushForEnding)
             }
         }.animation(.default, value: pageIntro)
             .animation(.default, value: pageCipher)
             .animation(.default, value: pageDiffie)
             .animation(.default, value: pageQuantum)
+            .animation(.default, value: pageFinish)
     }
 }
 

@@ -29,7 +29,7 @@
       "scale" : "2x"
     },
     {
-      "filename" : "quantum_computer.png",
+      "filename" : "decryption.png",
       "idiom" : "universal",
       "scale" : "3x"
     },
@@ -40,7 +40,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "quantum_computer_dark.png",
+      "filename" : "decryption_dark.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
