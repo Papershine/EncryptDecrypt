@@ -16,73 +16,87 @@ struct CipherView: View {
                 VStack(alignment: .leading, spacing: 25) {
                     Text("Ceasar Cipher").font(.system(.title)).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading)
                     if viewModel.pageOne {
-                        CipherTextOne()
-                        TextField("Enter your word here", text: $viewModel.message)
-                            .padding()
-                            .autocorrectionDisabled()
-                            .onReceive(Just($viewModel.message)) { newValue in
-                                let filtered = newValue.wrappedValue.filter { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ".contains($0) }
-                                if filtered != newValue.wrappedValue {
-                                    viewModel.message = filtered
+                        VStack(alignment: .leading, spacing: 25) {
+                            CipherTextOne()
+                            TextField("Enter your word here", text: $viewModel.message)
+                                .padding()
+                                .autocorrectionDisabled()
+                                .onReceive(Just($viewModel.message)) { newValue in
+                                    let filtered = newValue.wrappedValue.filter { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ".contains($0) }
+                                    if filtered != newValue.wrappedValue {
+                                        viewModel.message = filtered
+                                    }
                                 }
+                                .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
+                            Button("Next >") {
+                                // hide this page and display next page
+                                viewModel.pageOne = false
+                                viewModel.pageTwo = true
                             }
-                            .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
-                        Button("Next >") {
-                            // hide this page and display next page
-                            viewModel.pageOne = false
-                            viewModel.pageTwo = true
-                        }
-                        .buttonStyle(BlueButton())
-                        .disabled(viewModel.message == "")
+                            .buttonStyle(BlueButton())
+                            .disabled(viewModel.message == "")
+                        }.transition(.enterFromBottom)
                     }
                     if viewModel.pageTwo {
-                        CipherTextTwo()
-                        Slider(value: $viewModel.keyIndexDbl, in: 1...50)
-                        Text("Your key value: ") + Style.monospace("\(viewModel.key.wrappedValue)")
-                        Button("Next >") {
-                            // hide this page and display next page
-                            viewModel.pageTwo = false
-                            viewModel.pageThree = true
-                        }
-                        .buttonStyle(BlueButton())
+                        VStack(alignment: .leading, spacing: 25) {
+                            CipherTextTwo()
+                            Slider(value: $viewModel.keyIndexDbl, in: 1...50)
+                            Text("Your key value: ") + Style.monospace("\(viewModel.key.wrappedValue)")
+                            Button("Next >") {
+                                // hide this page and display next page
+                                viewModel.pageTwo = false
+                                viewModel.pageThree = true
+                            }
+                            .buttonStyle(BlueButton())
+                        }.transition(.enterFromBottom)
                     }
                     if viewModel.pageThree {
-                        CipherTextThree()
+                        CipherTextThree().transition(.enterFromBottom)
                     }
                     if viewModel.pageFour {
-                        CipherTextFour()
-                        if viewModel.pageFourSub {
-                            CipherTextFourSub()
-                            Button("Next >") {
-                                // revert back to encrypted
-                                viewModel.message = viewModel.encryptedMessage
-                                
-                                // hide this page and display next page
-                                viewModel.pageFour = false
-                                viewModel.pageFive = true
+                        VStack(alignment: .leading, spacing: 25) {
+                            CipherTextFour()
+                            if viewModel.pageFourSub {
+                                VStack(alignment: .leading, spacing: 25) {
+                                    CipherTextFourSub()
+                                    Button("Next >") {
+                                        // revert back to encrypted
+                                        viewModel.message = viewModel.encryptedMessage
+                                        
+                                        // hide this page and display next page
+                                        viewModel.pageFour = false
+                                        viewModel.pageFive = true
+                                    }
+                                    .buttonStyle(BlueButton())
+                                }.transition(.enterFromBottom)
                             }
-                            .buttonStyle(BlueButton())
-                        }
+                        }.transition(.enterFromBottom)
                     }
                     if viewModel.pageFive {
-                        CipherTextFive()
-                        if viewModel.pageFiveSub {
-                            CipherTextFiveSub()
-                            Button("Next >") {
-                                // hide this page and display next page
-                                viewModel.pageFive = false
-                                viewModel.pageSix = true
+                        VStack(alignment: .leading, spacing: 25) {
+                            CipherTextFive()
+                            if viewModel.pageFiveSub {
+                                VStack(alignment: .leading, spacing: 25) {
+                                    CipherTextFiveSub()
+                                    Button("Next >") {
+                                        // hide this page and display next page
+                                        viewModel.pageFive = false
+                                        viewModel.pageSix = true
+                                    }
+                                    .buttonStyle(BlueButton())
+                                }.transition(.enterFromBottom)
                             }
-                            .buttonStyle(BlueButton())
-                        }
+                        }.transition(.enterFromBottom)
                     }
                     if viewModel.pageSix {
-                        CipherTextSix()
-                        Button("Next Chapter >") {
-                            pageCipher = false
-                            pageDiffie = true
-                        }
-                        .buttonStyle(IndigoButton())
+                        VStack(alignment: .leading, spacing: 25) {
+                            CipherTextSix()
+                            Button("Next Chapter >") {
+                                pageCipher = false
+                                pageDiffie = true
+                            }
+                            .buttonStyle(IndigoButton())
+                        }.transition(.enterFromBottom)
                     }
                     Spacer()
                 }
@@ -99,12 +113,19 @@ struct CipherView: View {
                         Spacer()
                     }
                 }.padding()
-            }
+            }.animation(.default, value: viewModel.pageOne)
+                .animation(.default, value: viewModel.pageTwo)
+                .animation(.default, value: viewModel.pageThree)
+                .animation(.default, value: viewModel.pageFour)
+                .animation(.default, value: viewModel.pageFourSub)
+                .animation(.default, value: viewModel.pageFive)
+                .animation(.default, value: viewModel.pageFiveSub)
+                .animation(.default, value: viewModel.pageSix)
         }
     }
 }
 
-class CipherViewModel: ObservableObject {
+@MainActor class CipherViewModel: ObservableObject {
     @Published var message = ""
     var originalMessage = ""
     var encryptedMessage = ""

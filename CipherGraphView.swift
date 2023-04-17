@@ -10,87 +10,93 @@ struct CipherGraphView: View {
     @State var encryptPulseStart = false
     @State var decryptPulseStart = false
     
+    @State var keyShake = 0
+    @State var keyShakeAgain = 0
+    @State var wrongKeyShake = 0
+    
     var body: some View {
         VStack(spacing: 25) {
             Spacer()
-            if #available(iOS 16.0, *) {
+            ZStack {
                 Text(" \(viewModel.message) ")
-                    .font(.system(size: 50))
-                    .dropDestination(for: String.self) { text, _ in
-                        if text.first == "enc" {
-                            viewModel.message = encrypt(viewModel.message, key: viewModel.key.wrappedValue)
-                        } else if text.first == "dec" {
-                            viewModel.message = decrypt(viewModel.message, key: viewModel.key.wrappedValue)
-                        } else {
-                            print("ERROR: unkown drop origin")
-                        }
-                        return true
-                    }
-                    .padding()
-                    .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
-            } else {
-                // Fallback on earlier versions
+                    .font(.custom("menlo", size: 48, relativeTo: .largeTitle))
+                    .id("message" + viewModel.message)
+                    .transition(.opacity)
             }
-            Spacer()
+            .padding()
+            .overlay(RoundedRectangle(cornerRadius: 10.0).strokeBorder(Color.gray, style: StrokeStyle(lineWidth: 1.0)))
             HStack {
                 Spacer()
-                if #available(iOS 16.0, *) {
-                    if viewModel.pageThree {
-                        Image("encryption")
-                            .scaleEffect(encryptPulseStart ? 1.05 : 1)
-                            .animation(encryptPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: encryptPulseStart)
-                            .dropDestination(for: String.self) { _, _ in
-                                // save user choices
-                                viewModel.originalMessage = viewModel.message
-                                viewModel.encryptedMessage = encrypt(viewModel.message, key: viewModel.key.wrappedValue)
-                                viewModel.wrongMessage = encrypt(viewModel.message, key: viewModel.key.wrappedValue+1)
-                                
-                                // show the encrypted message
-                                viewModel.message = viewModel.encryptedMessage
-                                
-                                // next page
-                                viewModel.pageThree = false
-                                viewModel.pageFour = true
-                                return true
-                            }
-                    } else {
-                        Image("encryption")
+                VStack {
+                    Image("arrow_right")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                        .scaleEffect(x: 1, y: -1, anchor: .center)
+                        .offset(x: 3)
+                        .invertOnDarkTheme()
+                    if #available(iOS 16.0, *) {
+                        if viewModel.pageThree {
+                            Image("encryption")
+                                .scaleEffect(encryptPulseStart ? 1.05 : 1)
+                                .animation(encryptPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: encryptPulseStart)
+                                .dropDestination(for: String.self) { _, _ in
+                                    // save user choices
+                                    viewModel.originalMessage = viewModel.message
+                                    viewModel.encryptedMessage = encrypt(viewModel.message, key: viewModel.key.wrappedValue)
+                                    viewModel.wrongMessage = encrypt(viewModel.message, key: viewModel.key.wrappedValue+1)
+                                    
+                                    Task {
+                                        // show the encrypted message
+                                        await animateToEncrypted()
+                                    }
+                                    
+                                    return true
+                                }
+                        } else {
+                            Image("encryption")
+                        }
                     }
                 }
                 Spacer()
-                if #available(iOS 16.0, *) {
-                    if viewModel.pageFour {
-                        Image("decryption")
-                            .scaleEffect(decryptPulseStart ? 1.05 : 1)
-                            .animation(decryptPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: decryptPulseStart)
-                            .dropDestination(for: String.self) { _, _ in
-                                // stop animating
-                                decryptPulseStart = false
-                                
-                                // show the dencrypted message
-                                viewModel.message = viewModel.originalMessage
-                                
-                                // display success
-                                viewModel.pageFourSub = true
-                                return true
-                            }
-                    } else if viewModel.pageFive {
-                        Image("decryption")
-                            .scaleEffect(decryptPulseStart ? 1.05 : 1)
-                            .animation(decryptPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: decryptPulseStart)
-                            .dropDestination(for: String.self) { _, _ in
-                                // stop animating
-                                decryptPulseStart = false
-                                
-                                // show the wrong dencrypted message
-                                viewModel.message = viewModel.wrongMessage
-                                
-                                // display success
-                                viewModel.pageFiveSub = true
-                                return true
-                            }
-                    } else {
-                        Image("decryption")
+                VStack {
+                    Image("arrow_left")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                        .scaleEffect(x: 1, y: -1, anchor: .center)
+                        .invertOnDarkTheme()
+                    if #available(iOS 16.0, *) {
+                        if viewModel.pageFour {
+                            Image("decryption")
+                                .scaleEffect(decryptPulseStart ? 1.05 : 1)
+                                .animation(decryptPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: decryptPulseStart)
+                                .dropDestination(for: String.self) { _, _ in
+                                    // stop animating
+                                    decryptPulseStart = false
+                                    
+                                    Task {
+                                        // show the decrypted message
+                                        await animateToDecrypted()
+                                    }
+                                    return true
+                                }
+                        } else if viewModel.pageFive {
+                            Image("decryption")
+                                .scaleEffect(decryptPulseStart ? 1.05 : 1)
+                                .animation(decryptPulseStart ? .easeInOut.repeatForever(autoreverses: true) : .default, value: decryptPulseStart)
+                                .dropDestination(for: String.self) { _, _ in
+                                    // stop animating
+                                    decryptPulseStart = false
+                                    
+                                    Task {
+                                        // show the wrong dencrypted message
+                                        await animateToWrongDecrypted()
+                                        
+                                    }
+                                    return true
+                                }
+                        } else {
+                            Image("decryption")
+                        }
                     }
                 }
                 Spacer()
@@ -102,14 +108,26 @@ struct CipherGraphView: View {
                     if viewModel.pageThree {
                         ZStack {
                             Image("key")
+                                .shake(with: keyShake)
+                                .onAppear {
+                                    withAnimation(.shakeSpring()) {
+                                        keyShake = 3
+                                    }
+                                }
                             Style.monospaceBig("\(viewModel.key.wrappedValue)").offset(x: -30)
                         }.onDrag {
                             encryptPulseStart = true
                             return NSItemProvider(object: "enc" as NSItemProviderWriting)
                         }
-                    } else if viewModel.pageFour {
+                    } else if viewModel.pageFour && !viewModel.pageFourSub {
                         ZStack {
                             Image("key")
+                                .shake(with: keyShakeAgain)
+                                .onAppear {
+                                    withAnimation(.shakeSpring()) {
+                                        keyShakeAgain = 3
+                                    }
+                                }
                             Style.monospaceBig("\(viewModel.key.wrappedValue)").offset(x: -30)
                         }.onDrag {
                             decryptPulseStart = true
@@ -127,16 +145,24 @@ struct CipherGraphView: View {
                 Spacer()
                 // wrong key
                 if #available(iOS 16.0, *) {
-                    if viewModel.pageFive {
+                    if viewModel.pageFive && !viewModel.pageFiveSub {
                         ZStack {
                             Image("key_wrong")
+                                .shake(with: wrongKeyShake)
+                                .onAppear {
+                                    withAnimation(.shakeSpring()) {
+                                        wrongKeyShake = 3
+                                    }
+                                }
                             Style.monospaceBig("\(viewModel.key.wrappedValue+1)").offset(x: -30)
-                        }.onDrag {
+                        }
+                        .onDrag {
                             decryptPulseStart = true
                             return NSItemProvider(object: "enc" as NSItemProviderWriting)
                         }
+                        .transition(.pushFromRight)
                         Spacer()
-                    } else if viewModel.pageSix {
+                    } else if viewModel.pageFiveSub || viewModel.pageSix {
                         ZStack {
                             Image("key_wrong")
                             Style.monospaceBig("\(viewModel.key.wrappedValue+1)").offset(x: -30)
@@ -148,7 +174,7 @@ struct CipherGraphView: View {
                 }
             }
             Spacer()
-        }
+        }.animation(.default, value: viewModel.pageFive)
     }
     
     func encrypt(_ t: String, key: Int) -> String {
@@ -200,5 +226,51 @@ struct CipherGraphView: View {
         }
         
         return decrypted
+    }
+    
+    func animateToEncrypted() async {
+        try? await Task.sleep(nanoseconds: 50_000_000) // 0.1 seconds
+        withAnimation(.default) {
+            viewModel.message = encrypt(viewModel.message, key: 1)
+        }
+        if viewModel.message != viewModel.encryptedMessage {
+            Task {
+                await animateToEncrypted()
+            }
+        } else {
+            // next page
+            viewModel.pageThree = false
+            viewModel.pageFour = true
+        }
+    }
+    
+    func animateToDecrypted() async {
+        try? await Task.sleep(nanoseconds: 50_000_000) // 0.1 seconds
+        withAnimation(.default) {
+            viewModel.message = decrypt(viewModel.message, key: 1)
+        }
+        if viewModel.message != viewModel.originalMessage {
+            Task {
+                await animateToDecrypted()
+            }
+        } else {
+            // display success
+            viewModel.pageFourSub = true
+        }
+    }
+    
+    func animateToWrongDecrypted() async {
+        try? await Task.sleep(nanoseconds: 50_000_000) // 0.1 seconds
+        withAnimation(.default) {
+            viewModel.message = decrypt(viewModel.message, key: 1)
+        }
+        if viewModel.message != viewModel.wrongMessage {
+            Task {
+                await animateToWrongDecrypted()
+            }
+        } else {
+            // display success
+            viewModel.pageFiveSub = true
+        }
     }
 }

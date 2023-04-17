@@ -89,23 +89,22 @@ struct DiffieHellmanView: View {
                             }
                             .buttonStyle(BlueButton())
                             .disabled(viewModel.secretRevealed == true)
-                            
-                            if viewModel.secretRevealed {
-                                VStack {
-                                    DiffieHellmanTextSixSub()
-                                    Button("Next Chapter >") {
-                                        // update data needed for next chapter
-                                        publicKeyColor = viewModel.userBlended.wrappedValue
-                                        secretKeyColor = viewModel.userColor
-                                        // go to next chapter
-                                        pageDiffie = false
-                                        pageQuantum = true
-                                    }
-                                    .buttonStyle(IndigoButton())
-                                    .disabled(viewModel.secretRevealed == false)
-                                }.transition(.enterFromBottom)
-                            }
                         }.frame(maxWidth: .infinity).transition(.pushFromBottom)
+                    }
+                    if viewModel.secretRevealed {
+                        VStack {
+                            DiffieHellmanTextSixSub()
+                            Button("Next Chapter >") {
+                                // update data needed for next chapter
+                                publicKeyColor = viewModel.userBlended.wrappedValue
+                                secretKeyColor = viewModel.userColor
+                                // go to next chapter
+                                pageDiffie = false
+                                pageQuantum = true
+                            }
+                            .buttonStyle(IndigoButton())
+                            .disabled(viewModel.secretRevealed == false)
+                        }.frame(maxWidth: .infinity).transition(.enterFromBottom)
                     }
                     Spacer()
                 }
