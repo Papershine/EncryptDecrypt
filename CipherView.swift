@@ -190,7 +190,7 @@ struct CipherTextFourSub: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Great! We have encrypted and decrypted the message correctly.")
-            Text("Now let's see what happens if we have the wrong key on the encrypted message.")
+            Text("Now let's see what happens if we use a wrong key on the encrypted message.")
         }
     }
 }
@@ -215,8 +215,8 @@ struct CipherTextFiveSub: View {
 struct CipherTextSix: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("So, if anybody knows the correct value of your key, they will be able to decrypt your messages or anything that you store.")
-            Text("Therefore, we need a method to generate the same key between two people, without others eavesdropping over the internet being able to guess the key in order to send and receive encrypted messages.")
+            Text("So, if anybody knows the correct value of your key, they will be able to decrypt any private encoded messages.")
+            Text("Therefore, we need a method to generate the same key between two people, without others eavesdropping over the internet being able to guess the key, in order to send and receive messages securely.")
             Text("The most common method is called 'Diffie Hellman Key Exchange'.")
             Text("Let's explore it.")
         }

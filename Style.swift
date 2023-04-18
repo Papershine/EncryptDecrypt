@@ -32,7 +32,6 @@ struct Style {
             .background(color)
             .clipShape(Capsule())
             .overlay(Capsule().stroke(border, lineWidth: 4))
-            //.border(border, width: 2)
     }
 }
 

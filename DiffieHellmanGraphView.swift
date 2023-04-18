@@ -36,6 +36,16 @@ struct DiffieHellmanGraphView: View {
                                     withAnimation(.shakeSpring()) {
                                         baseShake = 3
                                     }
+                                    Task {
+                                        try? await Task.sleep(nanoseconds: 5 * 1_000_000_000) // 5 seconds
+                                        if viewModel.baseMixable {
+                                            // shake again 5 seconds later
+                                            baseShake = 0
+                                            withAnimation(.shakeSpring()) {
+                                                baseShake = 3
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             .disabled(viewModel.baseMixable == false)
@@ -106,6 +116,16 @@ struct DiffieHellmanGraphView: View {
                                                 withAnimation(.shakeSpring()) {
                                                     userPublicShake = 3
                                                 }
+                                                Task {
+                                                    try? await Task.sleep(nanoseconds: 5 * 1_000_000_000) // 5 seconds
+                                                    if viewModel.mixedDroppable {
+                                                        // shake again 5 seconds later
+                                                        userPublicShake = 0
+                                                        withAnimation(.shakeSpring()) {
+                                                            userPublicShake = 3
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                         .disabled(viewModel.mixedDroppable == false)
@@ -140,6 +160,16 @@ struct DiffieHellmanGraphView: View {
                                                 if bool {
                                                     withAnimation(.shakeSpring()) {
                                                         computerPublicShake = 3
+                                                    }
+                                                    Task {
+                                                        try? await Task.sleep(nanoseconds: 5 * 1_000_000_000) // 5 seconds
+                                                        if viewModel.sharedMixable {
+                                                            // shake again 5 seconds later
+                                                            computerPublicShake = 0
+                                                            withAnimation(.shakeSpring()) {
+                                                                computerPublicShake = 3
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }

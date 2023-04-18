@@ -33,6 +33,7 @@ struct IntroView: View {
                 Spacer()
             }
         }
+        .preferredColorScheme(.light)
         .contentShape(Rectangle()) // so whole page can be tapped
         .onTapGesture {
             print("tap")

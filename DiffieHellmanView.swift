@@ -80,7 +80,7 @@ struct DiffieHellmanView: View {
                             .disabled(viewModel.sharedRevealed == false)
                         }.frame(maxWidth: .infinity).transition(.pushFromBottom)
                     }
-                    if viewModel.pageSix {
+                    if viewModel.pageSix && !viewModel.secretRevealed {
                         VStack(alignment: .leading, spacing: 25) {
                             DiffieHellmanTextSix()
                             
