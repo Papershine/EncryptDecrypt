@@ -37,11 +37,11 @@ struct DiffieHellmanGraphView: View {
                                         baseShake = 3
                                     }
                                     Task {
-                                        try? await Task.sleep(nanoseconds: 5 * 1_000_000_000) // 5 seconds
+                                        try? await Task.sleep(nanoseconds: 6 * 1_000_000_000) // 6 seconds
                                         if viewModel.baseMixable {
-                                            // shake again 5 seconds later
+                                            // shake again 6 seconds later
                                             baseShake = 0
-                                            withAnimation(.shakeSpring()) {
+                                            withAnimation(.shakeSpringOnce()) {
                                                 baseShake = 3
                                             }
                                         }
@@ -117,11 +117,11 @@ struct DiffieHellmanGraphView: View {
                                                     userPublicShake = 3
                                                 }
                                                 Task {
-                                                    try? await Task.sleep(nanoseconds: 5 * 1_000_000_000) // 5 seconds
+                                                    try? await Task.sleep(nanoseconds: 6 * 1_000_000_000) // 6 seconds
                                                     if viewModel.mixedDroppable {
-                                                        // shake again 5 seconds later
+                                                        // shake again 6 seconds later
                                                         userPublicShake = 0
-                                                        withAnimation(.shakeSpring()) {
+                                                        withAnimation(.shakeSpringOnce()) {
                                                             userPublicShake = 3
                                                         }
                                                     }
@@ -162,11 +162,11 @@ struct DiffieHellmanGraphView: View {
                                                         computerPublicShake = 3
                                                     }
                                                     Task {
-                                                        try? await Task.sleep(nanoseconds: 5 * 1_000_000_000) // 5 seconds
+                                                        try? await Task.sleep(nanoseconds: 6 * 1_000_000_000) // 6 seconds
                                                         if viewModel.sharedMixable {
-                                                            // shake again 5 seconds later
+                                                            // shake again 6 seconds later
                                                             computerPublicShake = 0
-                                                            withAnimation(.shakeSpring()) {
+                                                            withAnimation(.shakeSpringOnce()) {
                                                                 computerPublicShake = 3
                                                             }
                                                         }

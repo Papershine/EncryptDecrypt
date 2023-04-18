@@ -178,6 +178,10 @@ extension Animation {
     static func shakeSpring() -> Animation {
         return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2).repeatCount(2).delay(1.5)
     }
+    
+    static func shakeSpringOnce() -> Animation {
+        return .spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)
+    }
 }
 
 

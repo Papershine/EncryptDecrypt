@@ -17,7 +17,7 @@ struct DiffieHellmanView: View {
                     Text("Diffie Hellman Key Exchange").font(.system(.title)).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading)
                     if viewModel.pageOne {
                         // display page one text
-                        VStack {
+                        VStack(alignment: .leading) {
                             DiffieHellmanTextOne()
                             Button("Next >") {
                                 // hide this page and display next page
@@ -66,7 +66,9 @@ struct DiffieHellmanView: View {
                     }
                     if viewModel.pageFour {
                         // display page four text
-                        DiffieHellmanTextFour().frame(maxWidth: .infinity).transition(.pushFromBottom)
+                        VStack(alignment: .leading) {
+                            DiffieHellmanTextFour().transition(.pushFromBottom)
+                        }.frame(maxWidth: .infinity)
                     }
                     if viewModel.pageFive {
                         VStack(alignment: .leading, spacing: 25) {
@@ -92,7 +94,7 @@ struct DiffieHellmanView: View {
                         }.frame(maxWidth: .infinity).transition(.pushFromBottom)
                     }
                     if viewModel.secretRevealed {
-                        VStack {
+                        VStack(alignment: .leading) {
                             DiffieHellmanTextSixSub()
                             Button("Next Chapter >") {
                                 // update data needed for next chapter
@@ -166,7 +168,7 @@ struct DiffieHellmanTextFour: View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Let's exchange our public keys.")
             Text("I just sent you my public key, which is orange.")
-            Text("Send me your public key by dragging and dropping your mixed color into my box.")
+            Text("Send me your public key by dragging and dropping your mixed color into my box.").frame(maxWidth: .infinity)
         }
     }
 }
